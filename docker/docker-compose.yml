@@ -1,0 +1,48 @@
+# NoteHub 部署编排
+#
+# 使用方式：
+#   本地开发 : cp .env.example .env && docker compose up --build
+#   服务器部署: 由 .github/workflows/deploy.yml 自动生成 .env 并拉取镜像
+#
+# 反向代理：容器仅监听本机 3000，TLS/域名由宿主机 nginx/caddy 处理，
+#           参考 nginx/notehub.conf
+
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/zhoulinf/NoteHub/notehub:latest}
+    build:
+      context: ..
+      dockerfile: docker/notehub.dockerfile
+    container_name: notehub
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "3000:3000"
+
+    # SQLite 数据库文件持久化
+    volumes:
+      - notehub_data:/data
+
+    environment:
+      PORT: 3000
+      # 限制 Node 堆内存，避免 4G 机器上 Node 撑大 heap 导致容器 OOM
+      NODE_OPTIONS: --max-old-space-size=512
+
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+    healthcheck:
+      # 若应用提供了 GET /api/health，建议替换为 http://localhost:3000/api/health
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  notehub_data:

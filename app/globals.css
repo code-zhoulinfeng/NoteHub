@@ -1,26 +1,361 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================================
+   NoteHub 设计系统 —— 与 docs/design.html 完全一致
+   ========================================================================= */
+
+@theme {
+  /* ink 灰阶 */
+  --color-ink-950: #08080a;
+  --color-ink-900: #0d0d10;
+  --color-ink-850: #121215;
+  --color-ink-800: #18181c;
+  --color-ink-750: #1e1e23;
+  --color-ink-700: #25252b;
+  --color-ink-600: #2f2f36;
+  --color-ink-500: #3a3a42;
+  --color-ink-400: #4a4a55;
+  --color-ink-300: #6a6a78;
+
+  /* accent（主红） */
+  --color-accent: #e50914;
+  --color-accent-600: #c50812;
+  --color-accent-400: #ff2a35;
+
+  /* 语义色 */
+  --color-mint: #3ddc97;
+  --color-amber: #f5a524;
+
+  /* 字体 */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 阴影 */
+  --shadow-glow: 0 0 60px -15px rgba(229, 9, 20, 0.55);
+  --shadow-card: 0 24px 70px -24px rgba(0, 0, 0, 0.9);
+  --shadow-soft: 0 10px 40px -12px rgba(0, 0, 0, 0.7);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #08080a;
+}
+
+::selection {
+  background: rgba(229, 9, 20, 0.35);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #26262f;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a48;
+  background-clip: content-box;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* ---------- 动画 ---------- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-up {
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.anim-in {
+  animation: fadeIn 0.5s ease both;
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-down {
+  animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes toastOut {
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+.toast-in {
+  animation: toastIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.toast-out {
+  animation: toastOut 0.26s ease both;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.modal-in {
+  animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ---------- 网格噪点背景 ---------- */
+.grid-noise {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ---------- 访客导航 ---------- */
+.nf-nav {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.5) 55%,
+    transparent 100%
+  );
+  transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s;
+  border-bottom: 1px solid transparent;
+}
+.nf-nav.solid {
+  background: #08080a;
+  border-bottom-color: #22222a;
+}
+
+/* ---------- 公开主页卡片 ---------- */
+.note-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease,
+    border-color 0.32s ease;
+  transform-origin: center center;
+}
+.note-card:hover {
+  transform: scale(1.05);
+  z-index: 30;
+}
+
+.card-desc {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.34s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.26s ease,
+    margin 0.34s ease;
+  margin-top: 0;
+}
+.note-card:hover .card-desc {
+  max-height: 76px;
+  opacity: 1;
+  margin-top: 8px;
+}
+
+.row-arrow {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, background 0.2s ease, transform 0.2s ease;
+}
+.row-wrap:hover .row-arrow {
+  opacity: 1;
+  pointer-events: auto;
+}
+.row-arrow:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* ---------- Markdown 正文 ---------- */
+.md {
+  color: #c8c8d0;
+  font-size: 15px;
+  line-height: 1.85;
+  word-wrap: break-word;
+}
+.md > *:first-child {
+  margin-top: 0 !important;
+}
+.md h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1.1rem;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+.md h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 2.2rem 0 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  letter-spacing: -0.015em;
+}
+.md h3 {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 1.6rem 0 0.5rem;
+}
+.md p {
+  margin: 0.95rem 0;
+}
+.md a {
+  color: #ff5a63;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 90, 99, 0.32);
+  transition: 0.2s;
+}
+.md a:hover {
+  border-color: #ff5a63;
+}
+.md ul,
+.md ol {
+  margin: 0.95rem 0;
+  padding-left: 1.35rem;
+}
+.md ul {
+  list-style: disc;
+}
+.md ol {
+  list-style: decimal;
+}
+.md li {
+  margin: 0.32rem 0;
+}
+.md li::marker {
+  color: #e50914;
+}
+.md blockquote {
+  margin: 1.3rem 0;
+  padding: 0.8rem 1.15rem;
+  border-left: 2px solid #e50914;
+  background: rgba(229, 9, 20, 0.06);
+  border-radius: 0 10px 10px 0;
+  color: #a6a6b0;
+}
+.md blockquote p {
+  margin: 0.25rem 0;
+}
+.md code.md-code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.16em 0.42em;
+  border-radius: 6px;
+  font-size: 0.875em;
+  color: #ffb0b6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.md pre.md-pre {
+  background: #0a0a0c;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 1.05rem 1.15rem;
+  overflow-x: auto;
+  margin: 1.3rem 0;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #c9d1d9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.md hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 2.2rem 0;
+}
+.md strong {
+  color: #fff;
+  font-weight: 600;
+}
+.md del {
+  color: #6b6b78;
+}
+
+/* ---------- 编辑器 / Diff ---------- */
+textarea {
+  tab-size: 2;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+.tab-active {
+  background: #fff;
+  color: #08080a;
+}
+
+.diff-line {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+.diff-add {
+  background: rgba(61, 220, 151, 0.09);
+  border-left: 2px solid rgba(61, 220, 151, 0.55);
+}
+.diff-del {
+  background: rgba(229, 9, 20, 0.1);
+  border-left: 2px solid rgba(229, 9, 20, 0.6);
+}
+
+/* ---------- 侧边栏 ---------- */
+.side-active {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.side-active .side-dot {
+  opacity: 1;
 }

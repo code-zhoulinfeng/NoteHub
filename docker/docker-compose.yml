@@ -35,6 +35,11 @@ services:
       resources:
         limits:
           memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "50"
 
     healthcheck:
       # 若应用提供了 GET /api/health，建议替换为 http://localhost:3000/api/health
